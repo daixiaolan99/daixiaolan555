@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>代晓兰 Dai Xiaolan — 个人简历</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="代晓兰（笔名：戴猛兰）— 青年艺术家 / 策展人 / IFree艺术馆主理人" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <h1 class="name">代晓兰 <span class="en">Dai Xiaolan</span></h1>
+        <p class="pen">笔名：戴猛兰</p>
+      </div>
+      <div class="actions">
+        <button id="theme-toggle" aria-label="切换主题">🌙</button>
+        <button id="download-btn" title="打印或另存为 PDF">⬇ 打印 / 下载</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <section class="hero card">
+      <div class="hero-left">
+        <h2>青年艺术家 · 策展人</h2>
+        <p class="roles">IFree艺术馆主理人 · 东莞市美术家协会会员 · 广东女画家协会会员</p>
+        <p class="summary">2015年至今从事美术教育、艺术策展、绘画创作。</p>
+
+        <div class="cta">
+          <a class="btn" href="#timeline">查看经历</a>
+          <button class="btn ghost" id="contact-mail">联系我</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="avatar" aria-hidden="true">
+          <!-- 可替换为真实照片 -->
+          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#f6d365"/><stop offset="1" stop-color="#fda085"/></linearGradient></defs>
+            <rect width="120" height="120" rx="12" fill="url(#g)"></rect>
+            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="26" fill="#fff">代晓兰</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="card">
+      <h3>简介</h3>
+      <p>我以“戴猛兰”为笔名，长期从事美术教育、艺术策展与绘画创作，策划并参与多个展览与教育项目，关注当代主题与女性视角的表达。</p>
+      <ul class="info-list">
+        <li><strong>身份：</strong>青年艺术家 / 策展人 / IFree艺术馆主理人</li>
+        <li><strong>组织：</strong>东莞市美术家协会会员 · 广东女画家协会会员</li>
+        <li><strong>从业：</strong>2015年至今：美术教育、艺术策展、绘画创作</li>
+      </ul>
+    </section>
+
+    <section id="timeline" class="card">
+      <h3>经历（时间线）</h3>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="time">2015 — 至今</div>
+          <div class="details">
+            <h4>美术教育 · 策展 · 创作</h4>
+            <p>长期从事美术教育与学生培养，策划并组织多场展览，持续进行绘画创作与个展、群展合作。</p>
+          </div>
+        </div>
+
+        <!-- 预留更多条目 -->
+      </div>
+    </section>
+
+    <section id="gallery" class="card">
+      <h3>作品 / 项目</h3>
+      <p class="muted">可在此处放置画作缩略图、展览海报或策展项目简介（示例为占位图）。点击查看大图。</p>
+      <div class="grid-gallery">
+        <figure class="thumb" tabindex="0"><img src="https://picsum.photos/seed/p1/400/300" alt="作品示例1"><figcaption>作品示例 1</figcaption></figure>
+        <figure class="thumb" tabindex="0"><img src="https://picsum.photos/seed/p2/400/300" alt="作品示例2"><figcaption>作品示例 2</figcaption></figure>
+        <figure class="thumb" tabindex="0"><img src="https://picsum.photos/seed/p3/400/300" alt="作品示例3"><figcaption>作品示例 3</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="contact" class="card">
+      <h3>联系方式</h3>
+      <p>电子邮件 / 联系方式（示例）：</p>
+      <ul class="contact-list">
+        <li>邮箱: <span id="email">dai.xiaolan@example.com</span> <button id="copy-email" title="复制邮箱">复制</button></li>
+        <li>微信: <em>（放置微信二维码或说明）</em></li>
+      </ul>
+      <p class="muted">注：上方邮箱为示例，部署时请替换为真实联系方式。</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small>© 代晓兰 Dai Xiaolan — 个人简历 | 制作：自动生成页面</small>
+    </div>
+  </footer>
+
+  <div id="lightbox" class="lightbox" aria-hidden="true" role="dialog">
+    <button class="lb-close" aria-label="关闭">✕</button>
+    <img class="lb-img" alt="放大图片" />
+    <p class="lb-caption"></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
