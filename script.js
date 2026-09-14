@@ -1,104 +1,108 @@
-// 交互脚本：主题、复制邮箱、联系、打印、画廊弹窗、时间线显现
-(function(){
+(function () {
   const root = document.documentElement;
   const themeToggle = document.getElementById('theme-toggle');
-  const emailEl = document.getElementById('email');
-  const copyBtn = document.getElementById('copy-email');
-  const contactMail = document.getElementById('contact-mail');
-  const downloadBtn = document.getElementById('download-btn');
+  const menuToggle = document.getElementById('menu-toggle');
+  const nav = document.querySelector('.main-nav');
+  const savedTheme = localStorage.getItem('theme');
 
-  // 恢复或初始化主题
-  const saved = localStorage.getItem('theme');
-  if(saved === 'dark') root.setAttribute('data-theme','dark');
-
-  function updateThemeIcon(){
-    const dark = root.getAttribute('data-theme') === 'dark';
-    themeToggle.textContent = dark ? '☀️' : '🌙';
-  }
+  if (savedTheme === 'dark') root.dataset.theme = 'dark';
+  const updateThemeIcon = () => {
+    const dark = root.dataset.theme === 'dark';
+    themeToggle.textContent = dark ? '☾' : '☼';
+    themeToggle.setAttribute('aria-label', dark ? '切换浅色主题' : '切换深色主题');
+  };
   updateThemeIcon();
-
   themeToggle.addEventListener('click', () => {
-    const isDark = root.getAttribute('data-theme') === 'dark';
-    if(isDark){
-      root.removeAttribute('data-theme');
-      localStorage.setItem('theme','light');
+    if (root.dataset.theme === 'dark') {
+      delete root.dataset.theme;
+      localStorage.setItem('theme', 'light');
     } else {
-      root.setAttribute('data-theme','dark');
-      localStorage.setItem('theme','dark');
+      root.dataset.theme = 'dark';
+      localStorage.setItem('theme', 'dark');
     }
     updateThemeIcon();
   });
 
-  // 复制邮箱
-  copyBtn.addEventListener('click', async () => {
-    const text = emailEl.textContent.trim();
-    try{
-      await navigator.clipboard.writeText(text);
-      copyBtn.textContent = '已复制';
-      setTimeout(()=> copyBtn.textContent = '复制', 1500);
-    }catch(e){
-      alert('复制失败，请手动复制：' + text);
+  menuToggle.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(open));
+  });
+  document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', () => {
+    nav.classList.remove('open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  }), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(item => revealObserver.observe(item));
+
+  const counters = document.querySelectorAll('[data-count]');
+  const countObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const target = Number(entry.target.dataset.count);
+    const start = performance.now();
+    const tick = now => {
+      const progress = Math.min((now - start) / 1000, 1);
+      entry.target.textContent = Math.floor(progress * target).toLocaleString('zh-CN');
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    countObserver.unobserve(entry.target);
+  }), { threshold: 0.7 });
+  counters.forEach(counter => countObserver.observe(counter));
+
+  document.querySelectorAll('.filter').forEach(filter => filter.addEventListener('click', () => {
+    document.querySelector('.filter.active').classList.remove('active');
+    filter.classList.add('active');
+    const category = filter.dataset.filter;
+    document.querySelectorAll('.work-card').forEach(card => {
+      card.classList.toggle('hidden', category !== 'all' && card.dataset.category !== category);
+    });
+  }));
+
+  const lightbox = document.getElementById('lightbox');
+  const lbArt = lightbox.querySelector('.lb-art');
+  const lbCaption = lightbox.querySelector('.lb-caption');
+  const closeLightbox = () => {
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  };
+  document.querySelectorAll('.work-card').forEach(card => {
+    const open = () => {
+      const image = card.querySelector('.work-image');
+      lbArt.className = 'lb-art ' + image.className.replace('work-image ', '');
+      lbCaption.textContent = card.querySelector('strong').textContent + ' · ' + card.querySelector('small').textContent;
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    };
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', event => { if (event.key === 'Enter') open(); });
+  });
+  lightbox.querySelector('.lb-close').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', event => { if (event.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeLightbox(); });
+
+  document.getElementById('copy-email').addEventListener('click', async event => {
+    const email = document.getElementById('contact-mail').textContent.trim().replace('↗', '').trim();
+    try {
+      await navigator.clipboard.writeText(email);
+      event.currentTarget.textContent = '已复制 ✓';
+      setTimeout(() => { event.currentTarget.textContent = '复制邮箱'; }, 1600);
+    } catch {
+      window.location.href = 'mailto:' + email;
     }
   });
+  document.getElementById('download-btn').addEventListener('click', () => window.print());
 
-  // 联系：打开默认邮箱客户端
-  contactMail.addEventListener('click', () => {
-    const to = emailEl.textContent.trim();
-    const subject = encodeURIComponent('合作 / 咨询 — 来自个人简历页面');
-    location.href = `mailto:${to}?subject=${subject}`;
-  });
-
-  // 打印 / 下载
-  downloadBtn.addEventListener('click', () => {
-    window.print();
-  });
-
-  // 时间线滚动时显示动画
-  const items = document.querySelectorAll('.timeline-item');
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if(e.isIntersecting) e.target.classList.add('show');
-    });
-  }, {threshold: 0.15});
-  items.forEach(i => obs.observe(i));
-
-  // 画廊弹窗
-  const thumbs = document.querySelectorAll('.thumb');
-  const lightbox = document.getElementById('lightbox');
-  const lbImg = lightbox.querySelector('.lb-img');
-  const lbCap = lightbox.querySelector('.lb-caption');
-  const lbClose = lightbox.querySelector('.lb-close');
-
-  thumbs.forEach(t => {
-    t.addEventListener('click', () => openLightbox(t));
-    t.addEventListener('keydown', (e) => { if(e.key === 'Enter') openLightbox(t); });
-  });
-  function openLightbox(t){
-    const img = t.querySelector('img');
-    lbImg.src = img.src;
-    lbCap.textContent = t.querySelector('figcaption')?.textContent || '';
-    lightbox.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeLightbox(){
-    lightbox.setAttribute('aria-hidden','true');
-    lbImg.src = '';
-    document.body.style.overflow = '';
-  }
-  lbClose.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeLightbox(); });
-
-  // 平滑滚动 (现代浏览器支持)
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', (e) => {
-      const href = a.getAttribute('href');
-      if(href.length > 1){
-        e.preventDefault();
-        const el = document.querySelector(href);
-        if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
-      }
-    });
-  });
-
-})();
+  const sections = document.querySelectorAll('main section[id]');
+  const sectionObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-link').forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id));
+    }
+  }), { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(section => sectionObserver.observe(section));
+}());
